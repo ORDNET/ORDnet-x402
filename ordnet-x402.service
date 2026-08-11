@@ -1,0 +1,15 @@
+[Unit]
+Description=ORDnet x402 Facilitator
+After=network.target ordnet-api-proxy.service ordnet-utxo.service
+
+[Service]
+Type=simple
+Environment=PORT=7001
+WorkingDirectory=/opt/ordnet-x402
+EnvironmentFile=/opt/ordnet-x402/.env
+ExecStart=/usr/bin/node /opt/ordnet-x402/dist/index.js
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
