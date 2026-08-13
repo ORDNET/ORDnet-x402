@@ -19,8 +19,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   under the same strictness — the client paid and got nothing. Routing and
   paywall now agree on one canonical spelling: every routable spelling is
   billed, and every billed request is served.
-- Version alignment: `/health` and the startup banner now report the
-  `package.json` version instead of stale hardcoded strings.
+- Version alignment: the stale version strings in `/health` (`1.1.0`) and the
+  startup banner (`v1.0`) are updated to match `package.json` (1.2.1). Both
+  remain literals — bump them together on every release.
 
 ### Tests
 
