@@ -43,7 +43,7 @@ app.use(express.json({ limit: '2mb' }));
 // ============================================================================
 
 app.get('/health', (_req, res) => {
-  res.json({ status: 'ok', service: 'ordnet-x402', version: '1.1.0', network: 'bsv', ...stats() });
+  res.json({ status: 'ok', service: 'ordnet-x402', version: '1.2.1', network: 'bsv', ...stats() });
 });
 
 app.post('/verify', async (req, res) => {
@@ -125,7 +125,7 @@ app.get('/discovery/resources', (_req, res) => {
 
 app.listen(CONFIG.port, '127.0.0.1', () => {
   console.error(
-    `ORDnet x402 Facilitator v1.0 on http://127.0.0.1:${CONFIG.port} — ` +
+    `ORDnet x402 Facilitator v1.2.1 on http://127.0.0.1:${CONFIG.port} — ` +
     `exact/bsv, payTo: ${CONFIG.masterPubKeyHex ? 'per-invoice (watch-only derivation)' : 'static'}`
   );
 });
