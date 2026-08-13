@@ -60,10 +60,53 @@ function buildRequirements(resource: string, route: PaywallRoute): PaymentRequir
   };
 }
 
+/**
+ * Normalise a path so that a paid route cannot be reached by a spelling the
+ * lookup table does not happen to contain.
+ *
+ * Express matches non-strict and case-insensitively by default, so `/paid/echo`
+ * was billed while `/paid/echo/` and `/Paid/Echo` served the content for free —
+ * both confirmed against express@4. The lookup happens on a raw string, so the
+ * string has to be canonical before it is used as a key.
+ *
+ * Collapses repeated slashes, strips a trailing slash (except for the root),
+ * decodes percent-escapes where that is safe, and lowercases. Anything that
+ * cannot be decoded is left as-is rather than throwing — an undecodable path
+ * simply will not match a route, which is the safe outcome.
+ */
+export function normalisePath(path: string): string {
+  // This function must express EXACTLY Express's own route equivalence — no
+  // more and no less.
+  //
+  // Less, and a spelling Express serves goes unbilled: that was the original
+  // bug, /paid/echo/ returning the paid content for free.
+  //
+  // More, and the paywall bills for a spelling Express will NOT serve: the
+  // caller settles a payment, the txid is burned into the anti-replay
+  // register, and they receive a 404. That is the worse failure, and an
+  // earlier version of this function had it — collapsing `//` and decoding
+  // `%2F` are both normalisations Express does not perform.
+  //
+  // Express's default matching is case-insensitive and tolerates one trailing
+  // slash. That is the whole equivalence class.
+  let p = String(path || '/');
+  if (p.length > 1 && p.endsWith('/')) p = p.slice(0, -1);
+  return p.toLowerCase();
+}
+
 export function paywall(routes: PaywallConfig): RequestHandler {
+  // Build the lookup table once, with normalised keys, so callers can keep
+  // writing PAID_ROUTES in readable form.
+  const table: PaywallConfig = {};
+  for (const [k, v] of Object.entries(routes)) {
+    const sp = k.indexOf(' ');
+    const method = k.slice(0, sp).toUpperCase();
+    table[`${method} ${normalisePath(k.slice(sp + 1))}`] = v;
+  }
+
   return async (req: Request, res: Response, next: NextFunction) => {
-    const key = `${req.method} ${req.path}`;
-    const route = routes[key];
+    const key = `${req.method.toUpperCase()} ${normalisePath(req.path)}`;
+    const route = table[key];
     if (!route) return next(); // not a paid route
 
     const resourceUrl = `${CONFIG.publicUrl}${req.path}`;

@@ -1,15 +1,19 @@
 {
   "name": "@ordnet/x402-facilitator",
-  "version": "1.1.0",
-  "repository": { "type": "git", "url": "https://github.com/ORDNET/ORDnet-x402.git" },
+  "version": "1.2.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ORDNET/ORDnet-x402.git"
+  },
   "author": "ORDnet / ODNCA",
   "license": "MIT",
-  "description": "ORDnet x402 facilitator \u2014 HTTP 402 payments in native BSV sats, settled on ORDnet's own node",
+  "description": "ORDnet x402 facilitator — HTTP 402 payments in native BSV sats, settled on ORDnet's own node",
   "type": "module",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "test": "node tests/paywall-tests.mjs"
   },
   "dependencies": {
     "express": "^4.19.2",

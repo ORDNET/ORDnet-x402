@@ -21,6 +21,19 @@ import { stats } from './store.js';
 assertConfig();
 
 const app = express();
+// NOTE: strict/case-sensitive routing is deliberately NOT enabled.
+//
+// Turning it on looks like defence in depth and is the opposite. The paywall
+// middleware runs first and normalises the path, so it charges for
+// /paid/echo/ correctly — but Express then fails to match the route and
+// answers 404. The caller has settled a payment, the txid is burned into the
+// anti-replay register, and they receive nothing. That is worse than the free
+// content it was meant to prevent.
+//
+// normalisePath() in the paywall is the fix: it canonicalises the lookup key,
+// so every spelling that Express will serve is also a spelling that gets
+// billed. Express's own lenient matching is then exactly what we want.
+// tests/paywall-tests.mjs asserts both halves: billed AND served.
 app.use(consoleRouter());
 app.disable('x-powered-by');
 app.use(express.json({ limit: '2mb' }));
