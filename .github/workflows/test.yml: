@@ -1,0 +1,25 @@
+name: build & tests
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install dependencies
+        run: npm install
+      - name: Type-check
+        run: npx tsc --noEmit
+      # With express installed this exercises the real middleware end to end,
+      # asserting both halves: every routable spelling is billed, and every
+      # billed request is then served rather than 404'd.
+      - name: Paywall tests
+        run: node tests/paywall-tests.mjs
