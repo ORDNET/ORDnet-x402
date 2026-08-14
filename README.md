@@ -1,5 +1,11 @@
 # ORDnet x402 Facilitator
 
+[![tests](https://github.com/ORDNET/ORDnet-x402/actions/workflows/test.yml/badge.svg)](https://github.com/ORDNET/ORDnet-x402/actions/workflows/test.yml)
+[![test count](https://img.shields.io/badge/tests-17_passing-2b8a3e?style=flat-square)](#tests)
+[![interface](https://img.shields.io/badge/x402-V2_facilitator-364fc7?style=flat-square)](https://github.com/coinbase/x402)
+[![settlement](https://img.shields.io/badge/settlement-native_BSV_sats-5f3dc4?style=flat-square)](#why-this-one-is-different)
+[![license](https://img.shields.io/badge/license-MIT-6a737d?style=flat-square)](LICENSE)
+
 HTTP 402 payments in **native BSV satoshis**, verified and settled on
 ORDnet's **own SV node** and address index — no third-party facilitator, no
 stablecoin, true sub-cent micropayments.
@@ -76,6 +82,20 @@ node dist/sweep.js <master-wif> /path/to/x402.sqlite
 
 It prints `address  satoshis  wif` per settled invoice; import the WIFs into
 a wallet and send to your cold address.
+
+## Tests
+
+```bash
+npm install
+npm test
+# -> 17 passed, 0 failed
+```
+
+The suite exists because of the audit findings it now guards: the
+trailing-slash and case-variant paywall bypasses, header spoofing, and the
+anti-replay register. See
+[SECURITY-FIXES-v1.2.0.md](SECURITY-FIXES-v1.2.0.md) and
+[SECURITY.md](SECURITY.md).
 
 ## Roadmap
 
